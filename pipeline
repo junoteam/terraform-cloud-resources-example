@@ -1,0 +1,76 @@
+pipeline {
+    agent any
+    
+    options { ansiColor('xterm') }
+
+    environment {
+        PATH="${env.WORKSPACE}:${env.PATH}"
+    }
+
+    stages {
+        stage ('Checkout Repo') {
+            steps {
+                cleanWs()
+                sh 'git clone https://github.com/junoteam/terraform-example-ec2'
+            }
+        }
+
+        stage ('Install IaC Tools') {
+            steps {
+                sh '''
+                curl -k -o /tmp/terraform_1.4.6_linux_arm.zip -C - "https://releases.hashicorp.com/terraform/1.4.6/terraform_1.4.6_linux_arm.zip" && unzip /tmp/terraform_1.4.6_linux_arm.zip -d $WORKSPACE && chmod a+x $WORKSPACE/terraform
+                '''
+
+                sh '''
+                curl -k -o $WORKSPACE/terragrunt -C - "https://github.com/gruntwork-io/terragrunt/releases/download/v0.45.10/terragrunt_linux_arm64" && chmod a+x $WORKSPACE/terragrunt
+                '''
+            }
+        }
+
+        stage ('Check IaC Versions') {
+            steps {
+                sh 'terraform --version'
+                sh 'terragrunt --version'
+            }
+        }
+
+        stage ('Terraform init') {
+            steps {
+                withAWS(credentials: 'aws-naviteq-sandbox', region: 'eu-central-1') {
+                    sh '''
+                    ls -la
+                    cd terraform-example-ec2/terraform
+                    terraform init
+                    '''
+                }
+            }
+        }
+        stage ('Terraform plan') {
+            steps {
+                timeout(time: 15, unit: "MINUTES") {
+                    input message: 'Do you want to approve Terraform Plan?', ok: 'Yes'
+                }
+                withAWS(credentials: 'aws-naviteq-sandbox', region: 'eu-central-1') {
+                    sh '''
+                    cd terraform-example-ec2/terraform
+                    terraform plan -out=tfplan.out
+                    '''
+                }
+            }
+        }
+
+        stage ('Terraform apply') {
+            steps {
+                timeout(time: 15, unit: "MINUTES") {
+                    input message: 'Do you want to approve Terraform Apply?', ok: 'Yes'
+                }
+                withAWS(credentials: 'aws-naviteq-sandbox', region: 'eu-central-1') {
+                    sh '''
+                    cd terraform-example-ec2/terraform
+                    terraform apply -auto-approve
+                    '''
+                }
+            }
+        }
+    }
+}~
