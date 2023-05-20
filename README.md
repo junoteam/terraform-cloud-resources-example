@@ -74,4 +74,3 @@ Summary: {
 Total Monthly Cost:        13.598 USD
 Total Monthly Cost (diff): 0 USD
 ```
-

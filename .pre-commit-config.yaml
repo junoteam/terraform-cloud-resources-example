@@ -15,3 +15,5 @@ repos:
         args: 
           - --args=--path=terraform/
         verbose: true
+exclude: 'pipeline'
+exclude: 'Jenkinsfile'
