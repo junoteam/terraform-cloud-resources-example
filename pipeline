@@ -34,6 +34,15 @@ pipeline {
             }
         }
 
+        // stage ('Pre-commit hooks') {
+        //     steps {
+        //         withAWS(credentials: 'aws-naviteq-sandbox', region: 'eu-central-1') {
+        //             sh '''
+        //             '''
+        //         }
+        //     }
+        // }
+
         stage ('Terraform init') {
             steps {
                 withAWS(credentials: 'aws-naviteq-sandbox', region: 'eu-central-1') {
@@ -45,6 +54,7 @@ pipeline {
                 }
             }
         }
+
         stage ('Terraform plan') {
             steps {
                 timeout(time: 15, unit: "MINUTES") {
