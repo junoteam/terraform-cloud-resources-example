@@ -110,4 +110,3 @@ docker build -t jenkins/jenkins:lts-local .
 ```bash
 docker run --restart=always -d -p 8080:8080 -p 50000:50000 --name jenkins -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts-local
 ```
-
