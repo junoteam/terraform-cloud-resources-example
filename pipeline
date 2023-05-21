@@ -5,6 +5,7 @@ pipeline {
 
     environment {
         PATH="${env.WORKSPACE}:/var/jenkins_home/.local/bin/:${env.PATH}"
+        INFRACOST_API_KEY = credentials('infracost-api')
     }
 
     stages {
