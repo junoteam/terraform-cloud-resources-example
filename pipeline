@@ -4,7 +4,7 @@ pipeline {
     options { ansiColor('xterm') }
 
     environment {
-        PATH="${env.WORKSPACE}:${env.PATH}"
+        PATH="${env.WORKSPACE}:/var/jenkins_home/.local/bin/:${env.PATH}"
     }
 
     stages {
