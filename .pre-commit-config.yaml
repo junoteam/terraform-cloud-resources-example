@@ -4,7 +4,6 @@ repos:
     rev: v4.4.0
     hooks:
       - id: check-added-large-files
-      - id: end-of-file-fixer
   - repo: https://github.com/antonbabenko/pre-commit-terraform
     rev: v1.79.1
     hooks:

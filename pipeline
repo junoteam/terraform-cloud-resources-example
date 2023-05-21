@@ -5,13 +5,14 @@ pipeline {
 
     environment {
         PATH="${env.WORKSPACE}:${env.PATH}"
+        INFRACOST_API_KEY = credentials('infracost-api')
     }
 
     stages {
         stage ('Checkout Repo') {
             steps {
                 cleanWs()
-                sh 'git clone https://github.com/junoteam/terraform-example-ec2'
+                sh 'git clone https://github.com/junoteam/terraform-cloud-resources-example'
             }
         }
 
@@ -34,21 +35,24 @@ pipeline {
             }
         }
 
-        // stage ('Pre-commit hooks') {
-        //     steps {
-        //         withAWS(credentials: 'aws-naviteq-sandbox', region: 'eu-central-1') {
-        //             sh '''
-        //             '''
-        //         }
-        //     }
-        // }
+        stage ('Pre-commit hooks') {
+            steps {
+                withAWS(credentials: 'aws-naviteq-sandbox', region: 'eu-central-1') {
+                    sh '''
+                    cd terraform-cloud-resources-example/
+                    cat .pre-commit-config.yaml 
+                    pre-commit run -a
+                    '''
+                }
+            }
+        }
 
         stage ('Terraform init') {
             steps {
                 withAWS(credentials: 'aws-naviteq-sandbox', region: 'eu-central-1') {
                     sh '''
                     ls -la
-                    cd terraform-example-ec2/terraform
+                    cd terraform-cloud-resources-example/terraform/
                     terraform init
                     '''
                 }
@@ -62,7 +66,7 @@ pipeline {
                 }
                 withAWS(credentials: 'aws-naviteq-sandbox', region: 'eu-central-1') {
                     sh '''
-                    cd terraform-example-ec2/terraform
+                    cd terraform-cloud-resources-example/terraform/
                     terraform plan -out=tfplan.out
                     '''
                 }
@@ -76,7 +80,7 @@ pipeline {
                 }
                 withAWS(credentials: 'aws-naviteq-sandbox', region: 'eu-central-1') {
                     sh '''
-                    cd terraform-example-ec2/terraform
+                    cd terraform-cloud-resources-example/terraform/
                     terraform apply -auto-approve
                     '''
                 }
