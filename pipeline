@@ -54,7 +54,8 @@ pipeline {
             steps {
                 withAWS(credentials: 'aws-naviteq-sandbox', region: 'eu-central-1') {
                     sh '''
-                    
+                    cd terraform-cloud-resources-example/terraform/
+                    pre-commit run -a
                     '''
                 }
             }
