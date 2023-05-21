@@ -39,7 +39,8 @@ pipeline {
             steps {
                 withAWS(credentials: 'aws-naviteq-sandbox', region: 'eu-central-1') {
                     sh '''
-                    cd terraform-cloud-resources-example/terraform/
+                    cd terraform-cloud-resources-example/
+                    cat .pre-commit-config.yaml 
                     pre-commit run -a
                     '''
                 }
