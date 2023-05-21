@@ -65,7 +65,7 @@ pipeline {
                 withAWS(credentials: 'aws-naviteq-sandbox', region: 'eu-central-1') {
                     sh '''
                     ls -la
-                    cd terraform-example-ec2/terraform
+                    cd terraform-cloud-resources-example/terraform/
                     terraform init
                     '''
                 }
@@ -79,7 +79,7 @@ pipeline {
                 }
                 withAWS(credentials: 'aws-naviteq-sandbox', region: 'eu-central-1') {
                     sh '''
-                    cd terraform-example-ec2/terraform
+                    cd terraform-cloud-resources-example/terraform/
                     terraform plan -out=tfplan.out
                     '''
                 }
@@ -93,7 +93,7 @@ pipeline {
                 }
                 withAWS(credentials: 'aws-naviteq-sandbox', region: 'eu-central-1') {
                     sh '''
-                    cd terraform-example-ec2/terraform
+                    cd terraform-cloud-resources-example/terraform/
                     terraform apply -auto-approve
                     '''
                 }
