@@ -81,7 +81,7 @@ module "ec2_complete" {
 
 resource "aws_eip" "this" {
   vpc      = true
-  instance = "${module.ec2_complete.id[0]}"
+  instance = module.ec2_complete.id[0]
 }
 
 ################################################################################

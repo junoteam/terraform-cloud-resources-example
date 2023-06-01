@@ -8,13 +8,17 @@ terraform apply
 terraform destroy
 ```
 
-## Infra Cost 
+## InfraCost 
 
 ```bash
 terraform plan -out tfplan.binary
 terraform show -json tfplan.binary > plan.json
 infracost breakdown --path plan.json --show-skipped
+```
 
+## InfraCost breakdown
+
+```bash
 Detected Terraform plan JSON file at plan.json
   ✔ Extracting only cost-related params from terraform
   ✔ Retrieving cloud prices to calculate costs
