@@ -47,7 +47,7 @@ pipeline {
             }
         }
 
-        stage ('Terraform init') {
+        stage ('Terraform Init') {
             steps {
                 withAWS(credentials: 'aws-naviteq-sandbox', region: 'eu-central-1') {
                     sh '''
@@ -59,7 +59,7 @@ pipeline {
             }
         }
 
-        stage ('Terraform plan') {
+        stage ('Terraform Plan') {
             steps {
                 timeout(time: 15, unit: "MINUTES") {
                     input message: 'Do you want to approve Terraform Plan?', ok: 'Yes'
@@ -73,7 +73,7 @@ pipeline {
             }
         }
 
-        stage ('Terraform apply') {
+        stage ('Terraform Apply') {
             steps {
                 timeout(time: 15, unit: "MINUTES") {
                     input message: 'Do you want to approve Terraform Apply?', ok: 'Yes'
