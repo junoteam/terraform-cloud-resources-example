@@ -1,12 +1,22 @@
 data "aws_availability_zones" "available" {}
 
-data "aws_ami" "amazon_linux" {
+# data "aws_ami" "ubuntu" {
+#   most_recent = true
+#   owners      = ["099720109477"]
+
+#   filter {
+#     name   = "name"
+#     values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+#   }
+# }
+
+data "aws_ami" "amazon_linux_23" {
   most_recent = true
   owners      = ["amazon"]
 
   filter {
     name   = "name"
-    values = ["amzn-ami-hvm-*-x86_64-gp2"]
+    values = ["al2023-ami-2023*-x86_64"]
   }
 }
 
@@ -35,7 +45,7 @@ module "ec2_complete" {
 
   name = local.name
 
-  ami                         = data.aws_ami.amazon_linux.id
+  ami                         = data.aws_ami.amazon_linux_23.id
   instance_type               = "t2.small"
   availability_zone           = element(module.vpc.azs, 0)
   subnet_id                   = element(module.vpc.public_subnets, 0)
