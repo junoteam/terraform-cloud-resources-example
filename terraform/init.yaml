@@ -8,7 +8,7 @@ package_upgrade: true
 
 groups:
   - admins: [root,sys]
-  - hashicorp
+  - cloud-users
 
 # Add users to the system. Users are added after groups are added.
 users:
@@ -16,12 +16,12 @@ users:
   - name: terraform
     gecos: terraform
     shell: /bin/bash
-    primary_group: hashicorp
+    primary_group: cloud-users
     sudo: ALL=(ALL) NOPASSWD:ALL
-    groups: users, adm
+    groups: adm, wheel, systemd-journal
     lock_passwd: false
     ssh_authorized_keys:
-      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDyQd3GtSqa9baNUZyrTN8pWBxV5wHEUoHxeE1z5Yi66szMbT1tRjt/vOMLpHFzyb3Zbn0mdDGvcyrJocS0lP00ZQKTJi5e5WnVPaeGKU9nAy09aV33NsmuIi3y4jNExft4KXBUM6dfMWVu4oBWPL4kCuHqtupzYmlnoGHheq2xbaoqAVQAEJs3ulmKbXxoqzIua5J0A1qo60UYQrLqjlVOV1qLXMcpJtshcGeDb9myZAttamNmFM5AMLZProMY8A3yO/V3aQtCoBzl4xdtlCEQpzlBJOr85lbGTyEh63NqEyW980D65AJHXuwrjJq9UJ8jNcX8VIyC9U6kiQsVwZAZFr9Q6h0E5z/l283yk3vdNTOJu6WR3Hsu7YCKU2+T7QcP31Qdc8bCwbOOF5UqCDcvDn1P+ip5o9j+sGv/u3k6bzIQWo8QKJOaoBiTKzhnSUfJhLuPWPNFylx69TgDaCd20ejwm4DSre+WSitPhS86tdCN2zo/6YupDArvzvwC4Ll9PeVNz9a8wE2kTOfcPd8pkb8rNRSiDyPTYnZ/iYlQre4z/w+NNH7ZVaVzCytsinWQer0jnSV1ogxm8ZTWnkLckt/demAOUzT/y6dhjrjcaxhcpm84WohCHxcMWudSDzsuS/qDxXevjLKp2YP/QzmW8quGu75iHYkq1pgkYRyJ4Q== alex@Alexs-MacBook-Pro.local
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDJDMRUCY12/pmNUjWZrwXZcSmHfH+bWqMzBJnXdbJDCEorIgoJeJESvoDPd0t+gA9DR5PuueK2TCkcMuxmwiDxxf3daRQiDWwv00F9Vx+NjQzdf0VTNT17mPu7PuSMrqSE1NLVRZKsoHy9j9yDY1EeePCwvgPKS30vbvDS2cSZHxwsP7csV01wBmSd16lVzx2oy49mqbcSzfG1BgadmFwL+y8MFMMgFBjsJhiRYSQt3NBp4cW+gRNyKjkZi5T+HW3cL3cS7pG55YXj2KLt7+0Rc4ciPbu6v5DcLYnYEymjYSYldn6LMxN83BBpBmKIPEGflcxcXnuBEbVCsdxRKfkBvT12aPYGB35lWjfNqDAxDzRYPiPMZ3Nm93KVn3KZgSpW6rzAupk11HWK8th50iKt9NTAbG2ttVAg4i3pekEACjT3Q/C7pEBSXZh3PpG45s6sDl29YVyryclz9gSuT+w6IQuMqDJw6V/kWAlWdcSwHT5rBFAf6brWn0F7lQcf3nM= your_email@example.com
 
 # Download and install packages
 packages:
@@ -32,4 +32,4 @@ packages:
 # Sets user dir and permissions
 runcmd:
   - sudo mkdir /home/terraform/code
-  - sudo chown -R terraform:hashicorp /home/terraform/code
+  - sudo chown -R terraform:cloud-users /home/terraform/code
