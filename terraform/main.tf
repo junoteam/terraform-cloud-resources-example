@@ -46,6 +46,12 @@ module "ec2_complete" {
   user_data_base64            = base64encode(local.user_data)
   user_data_replace_on_change = true
 
+  create_iam_instance_profile = true
+  iam_role_description        = "IAM role for EC2 instance"
+  iam_role_policies = {
+    AdministratorAccess = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    }
+
   enable_volume_tags = false
   root_block_device = [
     {
@@ -97,6 +103,7 @@ module "vpc" {
 ################################################################################
 # Security Group Module
 ################################################################################
+
 module "security_group" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "~> 4.17.2"

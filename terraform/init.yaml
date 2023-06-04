@@ -1,7 +1,4 @@
-#cloud-config
-# Add groups to the system
-# Adds the ubuntu group with members 'root' and 'sys'
-# and the empty group hashicorp.
+# cloud-config
 repo_update: true
 repo_upgrade: all
 package_upgrade: true
@@ -29,7 +26,7 @@ packages:
   - htop 
   - tmux 
 
-# Sets user dir and permissions
+# Set user dir and permissions
 runcmd:
   - sudo mkdir /home/terraform/code
   - sudo chown -R terraform:cloud-users /home/terraform/code
