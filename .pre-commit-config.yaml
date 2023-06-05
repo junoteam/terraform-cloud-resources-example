@@ -10,9 +10,6 @@ repos:
       - id: terraform_fmt
       - id: terraform_docs
       - id: terraform_tflint
-      - id: infracost_breakdown
-        args: 
-          - --args=--path=terraform/
         verbose: true
 exclude: 'pipeline'
 exclude: 'Jenkinsfile'

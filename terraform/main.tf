@@ -1,36 +1,30 @@
-provider "aws" {
-  region = local.region
-}
-
 data "aws_availability_zones" "available" {}
 
-data "aws_ami" "amazon_linux" {
+# data "aws_ami" "ubuntu" {
+#   most_recent = true
+#   owners      = ["099720109477"]
+
+#   filter {
+#     name   = "name"
+#     values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+#   }
+# }
+
+data "aws_ami" "amazon_linux_23" {
   most_recent = true
   owners      = ["amazon"]
 
   filter {
     name   = "name"
-    values = ["amzn-ami-hvm-*-x86_64-gp2"]
+    values = ["al2023-ami-2023*-x86_64"]
   }
 }
 
 locals {
-  name   = "ex-${basename(path.cwd)}"
-  region = "eu-west-1"
+  name   = "cloud-example-${basename(path.cwd)}"
 
-  vpc_cidr = "10.0.0.0/16"
+  vpc_cidr = "10.2.0.0/16"
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
-
-  user_data = file("./init.yaml")
-
-  # user_data = <<-EOT
-  #   #!/bin/bash
-  #   echo "Hello Terraform!"
-  #   mkdir ~/.ssh/ 
-  #   touch touch ~/.ssh/authorized_keys
-  #   echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDyQd3GtSqa9baNUZyrTN8pWBxV5wHEUoHxeE1z5Yi66szMbT1tRjt/vOMLpHFzyb3Zbn0mdDGvcyrJocS0lP00ZQKTJi5e5WnVPaeGKU9nAy09aV33NsmuIi3y4jNExft4KXBUM6dfMWVu4oBWPL4kCuHqtupzYmlnoGHheq2xbaoqAVQAEJs3ulmKbXxoqzIua5J0A1qo60UYQrLqjlVOV1qLXMcpJtshcGeDb9myZAttamNmFM5AMLZProMY8A3yO/V3aQtCoBzl4xdtlCEQpzlBJOr85lbGTyEh63NqEyW980D65AJHXuwrjJq9UJ8jNcX8VIyC9U6kiQsVwZAZFr9Q6h0E5z/l283yk3vdNTOJu6WR3Hsu7YCKU2+T7QcP31Qdc8bCwbOOF5UqCDcvDn1P+ip5o9j+sGv/u3k6bzIQWo8QKJOaoBiTKzhnSUfJhLuPWPNFylx69TgDaCd20ejwm4DSre+WSitPhS86tdCN2zo/6YupDArvzvwC4Ll9PeVNz9a8wE2kTOfcPd8pkb8rNRSiDyPTYnZ/iYlQre4z/w+NNH7ZVaVzCytsinWQer0jnSV1ogxm8ZTWnkLckt/demAOUzT/y6dhjrjcaxhcpm84WohCHxcMWudSDzsuS/qDxXevjLKp2YP/QzmW8quGu75iHYkq1pgkYRyJ4Q== alex@Alexs-MacBook-Pro.local >> ~/.ssh/authorized_keys"
-  #   chmod 600 ~/.ssh/authorized_keys
-  # EOT
 
   tags = {
     Name       = local.name
@@ -49,19 +43,20 @@ module "ec2_complete" {
 
   name = local.name
 
-  ami                         = data.aws_ami.amazon_linux.id
-  instance_type               = "t2.micro"
+  ami                         = data.aws_ami.amazon_linux_23.id
+  instance_type               = "t2.small"
   availability_zone           = element(module.vpc.azs, 0)
-  subnet_id                   = element(module.vpc.private_subnets, 0)
+  subnet_id                   = element(module.vpc.public_subnets, 0)
   vpc_security_group_ids      = [module.security_group.security_group_id]
   associate_public_ip_address = true
   disable_api_stop            = false
+  user_data                   = file("./init.yaml")
 
-  user_data_base64            = base64encode(local.user_data)
-  user_data_replace_on_change = true
-
-  #cpu_core_count       = 2 # default 4
-  #cpu_threads_per_core = 1 # default 2
+  create_iam_instance_profile = true
+  iam_role_description        = "IAM role for EC2 instance"
+  iam_role_policies = {
+    AdministratorAccess = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    }
 
   enable_volume_tags = false
   root_block_device = [
@@ -77,11 +72,13 @@ module "ec2_complete" {
   ]
 
   tags = local.tags
+
+  depends_on = [ module.vpc ]
 }
 
 resource "aws_eip" "this" {
   vpc      = true
-  instance = module.ec2_complete.id[0]
+  instance = module.ec2_complete.id
 }
 
 ################################################################################
@@ -112,6 +109,7 @@ module "vpc" {
 ################################################################################
 # Security Group Module
 ################################################################################
+
 module "security_group" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "~> 4.17.2"
@@ -121,7 +119,7 @@ module "security_group" {
   vpc_id      = module.vpc.vpc_id
 
   ingress_cidr_blocks = ["0.0.0.0/0"]
-  ingress_rules       = ["http-80-tcp", "all-icmp"]
+  ingress_rules       = ["ssh-tcp", "all-icmp"]
   egress_rules        = ["all-all"]
 
   tags = local.tags
