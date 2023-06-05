@@ -1,4 +1,7 @@
-# cloud-config
+#cloud-config
+# Add groups to the system
+# Adds the ubuntu group with members 'root' and 'sys'
+# and the empty group hashicorp.
 repo_update: true
 repo_upgrade: all
 package_upgrade: true

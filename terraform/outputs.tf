@@ -88,3 +88,8 @@ output "ec2_complete_ephemeral_block_device" {
   description = "Ephemeral block device information"
   value       = module.ec2_complete.ephemeral_block_device
 }
+
+output "elastic_ip" {
+  description = "default"
+  value = aws_eip.this.address
+}

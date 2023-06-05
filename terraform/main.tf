@@ -26,8 +26,6 @@ locals {
   vpc_cidr = "10.2.0.0/16"
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
 
-  user_data = file("./init.yaml")
-
   tags = {
     Name       = local.name
     Example    = local.name
@@ -52,9 +50,7 @@ module "ec2_complete" {
   vpc_security_group_ids      = [module.security_group.security_group_id]
   associate_public_ip_address = true
   disable_api_stop            = false
-
-  user_data_base64            = base64encode(local.user_data)
-  user_data_replace_on_change = true
+  user_data                   = file("./init.yaml")
 
   create_iam_instance_profile = true
   iam_role_description        = "IAM role for EC2 instance"
