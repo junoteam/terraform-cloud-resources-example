@@ -1,15 +1,5 @@
 data "aws_availability_zones" "available" {}
 
-# data "aws_ami" "ubuntu" {
-#   most_recent = true
-#   owners      = ["099720109477"]
-
-#   filter {
-#     name   = "name"
-#     values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
-#   }
-# }
-
 data "aws_ami" "amazon_linux_23" {
   most_recent = true
   owners      = ["amazon"]
@@ -21,7 +11,7 @@ data "aws_ami" "amazon_linux_23" {
 }
 
 locals {
-  name   = "cloud-example-${basename(path.cwd)}"
+  name = "cloud-example-${basename(path.cwd)}"
 
   vpc_cidr = "10.2.0.0/16"
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
@@ -56,7 +46,7 @@ module "ec2_complete" {
   iam_role_description        = "IAM role for EC2 instance"
   iam_role_policies = {
     AdministratorAccess = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-    }
+  }
 
   enable_volume_tags = false
   root_block_device = [
@@ -73,7 +63,7 @@ module "ec2_complete" {
 
   tags = local.tags
 
-  depends_on = [ module.vpc ]
+  depends_on = [module.vpc]
 }
 
 resource "aws_eip" "this" {
