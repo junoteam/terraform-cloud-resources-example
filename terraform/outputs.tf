@@ -91,5 +91,5 @@ output "ec2_complete_ephemeral_block_device" {
 
 output "elastic_ip" {
   description = "default"
-  value = aws_eip.this.address
+  value       = aws_eip.this.address
 }
