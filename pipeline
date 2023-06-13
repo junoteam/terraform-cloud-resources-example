@@ -76,9 +76,6 @@ pipeline {
 
         stage ('Infracost') {
             steps {
-                timeout(time: 15, unit: "MINUTES") {
-                    input message: 'Do you want to approve Terraform Plan?', ok: 'Yes'
-                }
                 withAWS(credentials: 'aws-naviteq-sandbox', region: 'eu-central-1') {
                     sh '''
                     cd terraform-cloud-resources-example/terraform/
